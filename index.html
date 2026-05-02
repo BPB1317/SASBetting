@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestionnaire d'Événements & Rappels</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>📅 Gestionnaire d'Événements</h1>
+    <p class="subtitle">Catégories, dates et rappels relatifs</p>
+  </header>
+
+  <main>
+    <!-- ============ Section Catégories ============ -->
+    <section class="card">
+      <h2>1. Catégories</h2>
+      <div class="row">
+        <input type="text" id="catName" placeholder="Nom (ex: france-1)" />
+        <input type="color" id="catColor" value="#3b82f6" />
+        <input type="number" id="catDelays" placeholder="Délais en h (ex: 96,48,24)" />
+        <button id="addCatBtn">+ Ajouter</button>
+      </div>
+      <small class="hint">Astuce : entrez plusieurs délais séparés par des virgules dans un champ texte ci-dessous.</small>
+      <input type="text" id="catDelaysText" placeholder="Délais multiples : 96,48,24" />
+      <ul id="catList" class="list"></ul>
+    </section>
+
+    <!-- ============ Section Dates ============ -->
+    <section class="card">
+      <h2>2. Dates d'événements</h2>
+      <div class="row">
+        <select id="dateCatSelect"></select>
+        <input type="datetime-local" id="dateInput" />
+        <button id="addDateBtn">+ Ajouter</button>
+      </div>
+      <ul id="dateList" class="list"></ul>
+    </section>
+
+    <!-- ============ Section Calendrier ============ -->
+    <section class="card">
+      <h2>3. Calendrier</h2>
+      <div class="cal-controls">
+        <button id="prevMonth">◀</button>
+        <span id="monthLabel"></span>
+        <button id="nextMonth">▶</button>
+        <button id="todayBtn">Aujourd'hui</button>
+      </div>
+      <div id="calFilters" class="filters"></div>
+      <div id="calendar" class="calendar"></div>
+    </section>
+
+    <!-- ============ Section Checklist ============ -->
+    <section class="card">
+      <h2>4. Checklist des tâches</h2>
+      <div id="checkFilters" class="filters">
+        <label><input type="checkbox" id="hideDone" /> Masquer les tâches faites</label>
+      </div>
+      <ul id="taskList" class="task-list"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <button id="exportBtn">💾 Exporter (JSON)</button>
+    <button id="importBtn">📂 Importer</button>
+    <input type="file" id="importFile" accept=".json" hidden />
+    <button id="resetBtn" class="danger">🗑 Tout réinitialiser</button>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

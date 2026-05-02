@@ -247,56 +247,33 @@ function renderCalendar() {
 function renderTasks() {
   const ul = document.getElementById('taskList');
   ul.innerHTML = '';
-  const hideDone = document.getElementById('hideDone').checked;
 
-  // On collecte uniquement les rappels (J-Xh), pas les événements principaux
-  const tasks = [];
-  state.dates.forEach(d => {
-    const cat = state.categories.find(c => c.id === d.catId);
-    if (!cat) return;
-    const eventDate = new Date(d.datetime);
-    (cat.delays || []).forEach(h => {
-      const reminderDate = new Date(eventDate.getTime() - h * 3600 * 1000);
-      const taskId = `${d.id}_${h}`;
-      tasks.push({
-        id: taskId,
-        catName: cat.name,
-        color: cat.color,
-        label: `J-${h}h`,
-        reminderDate,
-        eventDate
-      });
-    });
-  });
-
-  // Tri chronologique
-  tasks.sort((a, b) => a.reminderDate - b.reminderDate);
-
-  tasks.forEach(t => {
-    const checked = !!state.checks[t.id];
-    if (hideDone && checked) return;
-
-    const li = document.createElement('li');
-    li.className = 'task' + (checked ? ' done' : '');
-    li.innerHTML = `
-      <input type="checkbox" ${checked ? 'checked' : ''} data-id="${t.id}" />
-      <span class="badge" style="background:${t.color}">${t.catName}</span>
-      <span class="task-label">${t.label}</span>
-      <span class="task-date">${formatDate(t.reminderDate)}</span>
-      <span class="task-target">→ événement le ${formatDate(t.eventDate)}</span>
-    `;
-    li.querySelector('input').onchange = e => {
-      state.checks[t.id] = e.target.checked;
-      save();
-      renderTasks();
-    };
-    ul.appendChild(li);
-  });
+  let tasks = buildTasks().filter(t => t.isReminder); // ← uniquement les J-Xh
+  if (state.filterCats) tasks = tasks.filter(t => state.filterCats.has(t.catId));
+  if (state.hideDone) tasks = tasks.filter(t => !state.checks[t.key]);
 
   if (tasks.length === 0) {
-    ul.innerHTML = '<li class="empty">Aucune tâche. Ajoutez des catégories avec délais et des dates d\'événements.</li>';
+    ul.innerHTML = '<li style="color:#9ca3af;justify-content:center">Aucune tâche</li>';
+    return;
   }
+
+  tasks.forEach(t => {
+    const li = document.createElement('li');
+    if (state.checks[t.key]) li.classList.add('done');
+    li.innerHTML = `
+      <input type="checkbox" ${state.checks[t.key] ? 'checked' : ''} data-key="${t.key}"/>
+      <span class="badge" style="background:${t.color}">${t.catName}</span>
+      <span class="label">${t.label}</span>
+      <span class="when">${fmtDateTime(t.when)}</span>
+    `;
+    li.querySelector('input').addEventListener('change', e => {
+      state.checks[t.key] = e.target.checked;
+      save(); renderTasks(); renderCalendar();
+    });
+    ul.appendChild(li);
+  });
 }
+
 /* ============================================================
  * RENDU GLOBAL
  * ============================================================ */
